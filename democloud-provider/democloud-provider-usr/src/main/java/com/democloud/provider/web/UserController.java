@@ -4,6 +4,9 @@ import com.democloud.domain.CdUser;
 import com.democloud.domain.PromotionInfo;
 import com.democloud.provider.service.MarkQueryFeignApi;
 import com.democloud.provider.service.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +20,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("user")
+@Api(value = "API - UserController", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class UserController {
 
     @Resource
@@ -26,6 +30,7 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping("getUsrAndProm")
+    @ApiOperation(httpMethod = "GET",value = "获取用户信息")
     public Map<String,Object> getUsrAndProm(@RequestParam("userId") Long userId, @RequestParam("promotionId") Long promotionId) {
         Map<String,Object> map = new HashMap<>();
 
