@@ -22,7 +22,7 @@ public class MarkQueryFeignClient implements MarkQueryFeignApi {
     private PromotionService promotionService;
 
     @Override
-    @ApiOperation(httpMethod = "GET", value = "根据ID获取促销信息")
+    @ApiOperation(httpMethod = "POST", value = "根据ID获取促销信息")
     public PromotionInfo getPromotion(@PathVariable("promotionId") Long promotionId) {
         return promotionService.getPromotionById(promotionId);
     }
