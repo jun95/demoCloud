@@ -1,0 +1,621 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.democloud.provider.dao.PromotionDAO" >
+    <resultMap id="BaseResultMap" type="com.democloud.domain.PromotionInfo" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="dealer_id" property="dealerId" jdbcType="BIGINT" />
+        <result column="promotion_code" property="promotionCode" jdbcType="VARCHAR" />
+        <result column="type" property="type" jdbcType="INTEGER" />
+        <result column="title" property="title" jdbcType="VARCHAR" />
+        <result column="begin_date" property="beginDate" jdbcType="TIMESTAMP" />
+        <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
+        <result column="scope" property="scope" jdbcType="INTEGER" />
+        <result column="channel" property="channel" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="INTEGER" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+    id, dealer_id, promotion_code, type, title, begin_date, end_date, scope, channel, 
+    status, estimated_cost, forecast_sales, cost_rate, create_time, create_user, update_time, 
+    update_user, from_channel, parent_id, budgetary_subjects, programme_budget, budget_subject_total, 
+    budget_number, verification_status, verification_amount, apply_ammout, actual_verification_amount, 
+    nc_message, budgetary_subjects_code, audit_opinion, is_level,goods_type,version,promotion_type,content,
+    eoc_activity_id,pms_activity_id,enable_prom_strength,rule_id
+  </sql>
+    <!--刘见日 18-11-29-->
+    <sql id="Promo_Column_List" >
+    DISTINCT pi.id, pi.dealer_id, pi.promotion_code, pi.type, pi.title, pi.begin_date, pi.end_date, pi.scope, pi.channel,
+    pi.status, pi.estimated_cost, pi.forecast_sales, pi.cost_rate, pi.create_time, pi.create_user, pi.update_time,
+    pi.update_user, pi.from_channel, pi.parent_id, pi.budgetary_subjects, pi.programme_budget, pi.budget_subject_total,
+    pi.budget_number, pi.verification_status, pi.verification_amount, pi.apply_ammout, pi.actual_verification_amount,
+    pi.nc_message, pi.budgetary_subjects_code, pi.audit_opinion, pi.is_level,pi.goods_type,pi.version,pi.promotion_type,
+    pi.content,pi.eoc_activity_id,pi.pms_activity_id,pi.enable_prom_strength,pi.rule_id
+  </sql>
+
+    <!--刘见日 18-11-26-->
+    <sql id="promo_fragement">
+        <if test="entity!=null">
+            <if test="entity.id != null and entity.id != ''">
+                and pi.id = #{entity.id,jdbcType=BIGINT}
+            </if>
+            <if test="entity.dealerId != null and entity.dealerId != ''">
+                and pi.dealer_id = #{entity.dealerId,jdbcType=BIGINT}
+            </if>
+            <if test="entity.promotionCode != null and entity.promotionCode != ''">
+                <![CDATA[ and pi.promotion_code like concat('%', #{entity.promotionCode},'%') ]]>
+            </if>
+            <if test="entity.type != null and entity.type != ''">
+                and pi.type = #{entity.type,jdbcType=INTEGER}
+            </if>
+            <if test="entity.title != null and entity.title != ''">
+                <![CDATA[ and pi.title like concat('%', #{entity.title},'%') ]]>
+            </if>
+            <if test="entity.beginDate != null and entity.beginDate != ''">
+                <![CDATA[ and pi.begin_date >= #{entity.beginDate,jdbcType=TIMESTAMP} ]]>
+            </if>
+            <if test="entity.endDate != null and entity.endDate != ''">
+                <![CDATA[ and pi.end_date <= #{entity.endDate,jdbcType=TIMESTAMP} ]]>
+            </if>
+            <if test="entity.scope != null and entity.scope != ''">
+                and pi.scope = #{entity.scope,jdbcType=INTEGER}
+            </if>
+            <if test="entity.channel != null and entity.channel != ''">
+                <![CDATA[ and pi.channel like concat('%', #{entity.channel},'%') ]]>
+            </if>
+            <if test="entity.status != null and entity.status != ''">
+                and pi.status = #{entity.status,jdbcType=INTEGER}
+            </if>
+            <if test="entity.promoStatusList!=null and entity.promoStatusList.size()>0 ">
+                <![CDATA[ AND pi.status in]]>
+                <foreach collection="entity.promoStatusList" item="status" open="(" separator="," close=")">
+                    #{status}
+                </foreach>
+            </if>
+            <if test="entity.createTime != null and entity.createTime != ''">
+                <![CDATA[ and pi.create_time = #{entity.createTime,jdbcType=TIMESTAMP} ]]>
+            </if>
+            <if test="entity.createUser != null and entity.createUser != ''">
+                and pi.create_user = #{entity.createUser,jdbcType=BIGINT}
+            </if>
+            <if test="entity.updateTime != null and entity.updateTime != ''">
+                <![CDATA[ and pi.update_time = #{entity.updateTime,jdbcType=TIMESTAMP} ]]>
+            </if>
+            <if test="entity.updateUser != null and entity.updateUser != ''">
+                and pi.update_user = #{entity.updateUser,jdbcType=BIGINT}
+            </if>
+            <if test="entity.parentId != null">
+                and pi.parent_id = #{entity.parentId,jdbcType=BIGINT}
+            </if>
+            <if test="entity.fromChannel != null and entity.fromChannel != ''">
+                and pi.from_channel = #{entity.fromChannel,jdbcType=INTEGER}
+            </if>
+            <if test="entity.goodsType != null and entity.goodsType != ''">
+                and pi.goods_type = #{entity.goodsType,jdbcType=INTEGER}
+            </if>
+            <if test="entity.version != null and entity.version != ''">
+                and pi.version = #{entity.version,jdbcType=INTEGER}
+            </if>
+            <if test="entity.promotionType != null and entity.promotionType != ''">
+                and pi.promotion_type = #{entity.promotionType,jdbcType=INTEGER}
+            </if>
+            <if test="entity.eocActivityId != null">
+                and pi.eoc_activity_id = #{entity.eocActivityId,jdbcType=BIGINT}
+            </if>
+            <if test="entity.pmsActivityId != null">
+                and pi.pms_activity_id = #{entity.pmsActivityId,jdbcType=BIGINT}
+            </if>
+            <if test="entity.enablePromStrength != null">
+                and pi.enable_prom_strength = #{entity.enablePromStrength,jdbcType=INTEGER}
+            </if>
+            <if test="entity.ruleId != null">
+                and pi.rule_id = #{entity.ruleId,jdbcType=BIGINT}
+            </if>
+        </if>
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+        select
+        <include refid="Base_Column_List" />
+        from promotion_info
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <sql id="count_Tail">
+    select count(1) from
+  </sql>
+
+    <!-- mysql 查询总数 刘见日 18-11-28 去重-->
+    <sql id="count_Tail_Distinct">
+    select count(DISTINCT pi.id) from
+  </sql>
+
+    <sql id="pagination_tail">
+    limit #{page.pageOffset} , #{page.rows}
+  </sql>
+
+    <select id="querySameActivityList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM promotion_info
+        WHERE 1=1
+        <if test="entity!=null">
+            <if test="entity.beginDate != null and entity.endDate != null">
+                <![CDATA[ and not (end_date < #{entity.beginDate,jdbcType=TIMESTAMP} or begin_date > #{entity.endDate,jdbcType=TIMESTAMP}) ]]>
+            </if>
+            <if test="entity.dealerId != null and entity.dealerId != ''">
+                and dealer_id = #{entity.dealerId,jdbcType=BIGINT}
+            </if>
+            <if test="entity.eocActivityId != null ">
+                and eoc_activity_id = #{entity.eocActivityId,jdbcType=BIGINT}
+            </if>
+            <if test="entity.pmsActivityId != null ">
+                and pms_activity_id = #{entity.pmsActivityId,jdbcType=BIGINT}
+            </if>
+            <if test="entity.type != null and entity.type != ''">
+                and type = #{entity.type,jdbcType=INTEGER}
+            </if>
+            <if test="entity.status != null and entity.status != ''">
+                and status = #{entity.status,jdbcType=INTEGER}
+            </if>
+            <if test="entity.promoStatusList!=null and entity.promoStatusList.size()>0 ">
+                <![CDATA[ AND status in]]>
+                <foreach collection="entity.promoStatusList" item="status" open="(" separator="," close=")">
+                    #{status}
+                </foreach>
+            </if>
+            <if test="entity.fromChannel != null and entity.fromChannel != ''">
+                and from_channel = #{entity.fromChannel,jdbcType=INTEGER}
+            </if>
+            <if test="entity.parentId != null">
+                <choose>
+                    <when test="entity.parentId == '1'.toString()">
+                        <![CDATA[ AND parent_id > 0]]>
+                    </when>
+                    <otherwise>
+                        and parent_id = 0
+                    </otherwise>
+                </choose>
+            </if>
+        </if>
+        order by create_time desc
+        <if test="page!=null">
+            <include refid="pagination_tail"/>
+        </if>
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from promotion_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.democloud.domain.PromotionInfo" useGeneratedKeys="true"
+            keyProperty="id">
+    insert into promotion_info (id, dealer_id, promotion_code, 
+      type, title, begin_date, 
+      end_date, scope, channel, 
+      status, estimated_cost, forecast_sales, 
+      cost_rate, create_time, create_user, 
+      update_time, update_user, from_channel, 
+      parent_id, budgetary_subjects, programme_budget, 
+      budget_subject_total, budget_number, verification_status, 
+      verification_amount, apply_ammout, actual_verification_amount, 
+      nc_message, budgetary_subjects_code, audit_opinion,is_level,goods_type,version,
+      promotion_type,content,eoc_activity_id,pms_activity_id,enable_prom_strength,rule_id)
+    values (#{id,jdbcType=BIGINT}, #{dealerId,jdbcType=BIGINT}, #{promotionCode,jdbcType=VARCHAR}, 
+      #{type,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{beginDate,jdbcType=TIMESTAMP}, 
+      #{endDate,jdbcType=TIMESTAMP}, #{scope,jdbcType=INTEGER}, #{channel,jdbcType=VARCHAR}, 
+      #{status,jdbcType=INTEGER}, #{estimatedCost,jdbcType=DECIMAL}, #{forecastSales,jdbcType=BIGINT}, 
+      #{costRate,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=BIGINT}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=BIGINT}, #{fromChannel,jdbcType=INTEGER}, 
+      #{parentId,jdbcType=BIGINT}, #{budgetarySubjects,jdbcType=VARCHAR}, #{programmeBudget,jdbcType=DECIMAL}, 
+      #{budgetSubjectTotal,jdbcType=DECIMAL}, #{budgetNumber,jdbcType=VARCHAR}, #{verificationStatus,jdbcType=INTEGER}, 
+      #{verificationAmount,jdbcType=DECIMAL}, #{applyAmmout,jdbcType=DECIMAL}, #{actualVerificationAmount,jdbcType=DECIMAL}, 
+      #{ncMessage,jdbcType=VARCHAR}, #{budgetarySubjectsCode,jdbcType=VARCHAR}, #{auditOpinion,jdbcType=VARCHAR}, 
+      #{isLevel,jdbcType=INTEGER},#{goodsType,jdbcType=INTEGER}, #{version,jdbcType=INTEGER},#{promotionType,jdbcType=INTEGER},
+      #{content,jdbcType=VARCHAR},#{eocActivityId,jdbcType=BIGINT},#{pmsActivityId,jdbcType=BIGINT},
+      #{enablePromStrength,jdbcType=INTEGER},#{ruleId,jdbcType=BIGINT})
+  </insert>
+    <insert id="insertSelective" parameterType="com.democloud.domain.PromotionInfo" useGeneratedKeys="true"
+            keyProperty="id" keyColumn="id">
+        insert into promotion_info
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="dealerId != null" >
+                dealer_id,
+            </if>
+            <if test="promotionCode != null" >
+                promotion_code,
+            </if>
+            <if test="type != null" >
+                type,
+            </if>
+            <if test="title != null" >
+                title,
+            </if>
+            <if test="beginDate != null" >
+                begin_date,
+            </if>
+            <if test="endDate != null" >
+                end_date,
+            </if>
+            <if test="scope != null" >
+                scope,
+            </if>
+            <if test="channel != null" >
+                channel,
+            </if>
+            <if test="status != null" >
+                status,
+            </if>
+            <if test="estimatedCost != null" >
+                estimated_cost,
+            </if>
+            <if test="forecastSales != null" >
+                forecast_sales,
+            </if>
+            <if test="costRate != null" >
+                cost_rate,
+            </if>
+            <if test="createTime != null" >
+                create_time,
+            </if>
+            <if test="createUser != null" >
+                create_user,
+            </if>
+            <if test="updateTime != null" >
+                update_time,
+            </if>
+            <if test="updateUser != null" >
+                update_user,
+            </if>
+            <if test="fromChannel != null" >
+                from_channel,
+            </if>
+            <if test="parentId != null" >
+                parent_id,
+            </if>
+            <if test="budgetarySubjects != null" >
+                budgetary_subjects,
+            </if>
+            <if test="programmeBudget != null" >
+                programme_budget,
+            </if>
+            <if test="budgetSubjectTotal != null" >
+                budget_subject_total,
+            </if>
+            <if test="budgetNumber != null" >
+                budget_number,
+            </if>
+            <if test="verificationStatus != null" >
+                verification_status,
+            </if>
+            <if test="verificationAmount != null" >
+                verification_amount,
+            </if>
+            <if test="applyAmmout != null" >
+                apply_ammout,
+            </if>
+            <if test="actualVerificationAmount != null" >
+                actual_verification_amount,
+            </if>
+            <if test="ncMessage != null" >
+                nc_message,
+            </if>
+            <if test="budgetarySubjectsCode != null" >
+                budgetary_subjects_code,
+            </if>
+            <if test="auditOpinion != null" >
+                audit_opinion,
+            </if>
+            <if test="isLevel != null" >
+                is_level,
+            </if>
+            <if test="goodsType != null" >
+                goods_type,
+            </if>
+            <if test="version != null" >
+                version,
+            </if>
+            <if test="promotionType != null" >
+                promotion_type,
+            </if>
+            <if test="content != null" >
+                content,
+            </if>
+            <if test="eocActivityId != null" >
+                eoc_activity_id,
+            </if>
+            <if test="pmsActivityId != null" >
+                pms_activity_id,
+            </if>
+            <if test="enablePromStrength != null" >
+                enable_prom_strength,
+            </if>
+            <if test="ruleId != null" >
+                rule_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="dealerId != null" >
+                #{dealerId,jdbcType=BIGINT},
+            </if>
+            <if test="promotionCode != null" >
+                #{promotionCode,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null" >
+                #{type,jdbcType=INTEGER},
+            </if>
+            <if test="title != null" >
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="beginDate != null" >
+                #{beginDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endDate != null" >
+                #{endDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="scope != null" >
+                #{scope,jdbcType=INTEGER},
+            </if>
+            <if test="channel != null" >
+                #{channel,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null" >
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="estimatedCost != null" >
+                #{estimatedCost,jdbcType=DECIMAL},
+            </if>
+            <if test="forecastSales != null" >
+                #{forecastSales,jdbcType=BIGINT},
+            </if>
+            <if test="costRate != null" >
+                #{costRate,jdbcType=DECIMAL},
+            </if>
+            <if test="createTime != null" >
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUser != null" >
+                #{createUser,jdbcType=BIGINT},
+            </if>
+            <if test="updateTime != null" >
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUser != null" >
+                #{updateUser,jdbcType=BIGINT},
+            </if>
+            <if test="fromChannel != null" >
+                #{fromChannel,jdbcType=INTEGER},
+            </if>
+            <if test="parentId != null" >
+                #{parentId,jdbcType=BIGINT},
+            </if>
+            <if test="budgetarySubjects != null" >
+                #{budgetarySubjects,jdbcType=VARCHAR},
+            </if>
+            <if test="programmeBudget != null" >
+                #{programmeBudget,jdbcType=DECIMAL},
+            </if>
+            <if test="budgetSubjectTotal != null" >
+                #{budgetSubjectTotal,jdbcType=DECIMAL},
+            </if>
+            <if test="budgetNumber != null" >
+                #{budgetNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="verificationStatus != null" >
+                #{verificationStatus,jdbcType=INTEGER},
+            </if>
+            <if test="verificationAmount != null" >
+                #{verificationAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="applyAmmout != null" >
+                #{applyAmmout,jdbcType=DECIMAL},
+            </if>
+            <if test="actualVerificationAmount != null" >
+                #{actualVerificationAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="ncMessage != null" >
+                #{ncMessage,jdbcType=VARCHAR},
+            </if>
+            <if test="budgetarySubjectsCode != null" >
+                #{budgetarySubjectsCode,jdbcType=VARCHAR},
+            </if>
+            <if test="auditOpinion != null" >
+                #{auditOpinion,jdbcType=VARCHAR},
+            </if>
+            <if test="isLevel != null" >
+                #{isLevel,jdbcType=INTEGER},
+            </if>
+            <if test="goodsType != null" >
+                #{goodsType,jdbcType=INTEGER},
+            </if>
+            <if test="version != null" >
+                #{version,jdbcType=INTEGER},
+            </if>
+            <if test="promotionType != null" >
+                #{promotionType,jdbcType=INTEGER},
+            </if>
+            <if test="content != null" >
+                #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="eocActivityId != null" >
+                #{eocActivityId,jdbcType=BIGINT},
+            </if>
+            <if test="pmsActivityId != null" >
+                #{pmsActivityId,jdbcType=BIGINT},
+            </if>
+            <if test="enablePromStrength != null" >
+                #{enablePromStrength,jdbcType=INTEGER},
+            </if>
+            <if test="ruleId != null" >
+                #{ruleId,jdbcType=BIGINT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.democloud.domain.PromotionInfo" >
+        update promotion_info
+        <set >
+            <if test="dealerId != null" >
+                dealer_id = #{dealerId,jdbcType=BIGINT},
+            </if>
+            <if test="promotionCode != null" >
+                promotion_code = #{promotionCode,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null" >
+                type = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="title != null" >
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="beginDate != null" >
+                begin_date = #{beginDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endDate != null" >
+                end_date = #{endDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="scope != null" >
+                scope = #{scope,jdbcType=INTEGER},
+            </if>
+            <if test="channel != null" >
+                channel = #{channel,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null" >
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="estimatedCost != null" >
+                estimated_cost = #{estimatedCost,jdbcType=DECIMAL},
+            </if>
+            <if test="forecastSales != null" >
+                forecast_sales = #{forecastSales,jdbcType=BIGINT},
+            </if>
+            <if test="costRate != null" >
+                cost_rate = #{costRate,jdbcType=DECIMAL},
+            </if>
+            <if test="createTime != null" >
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUser != null" >
+                create_user = #{createUser,jdbcType=BIGINT},
+            </if>
+            <if test="updateTime != null" >
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUser != null" >
+                update_user = #{updateUser,jdbcType=BIGINT},
+            </if>
+            <if test="fromChannel != null" >
+                from_channel = #{fromChannel,jdbcType=INTEGER},
+            </if>
+            <if test="parentId != null" >
+                parent_id = #{parentId,jdbcType=BIGINT},
+            </if>
+            <if test="budgetarySubjects != null" >
+                budgetary_subjects = #{budgetarySubjects,jdbcType=VARCHAR},
+            </if>
+            <if test="programmeBudget != null" >
+                programme_budget = #{programmeBudget,jdbcType=DECIMAL},
+            </if>
+            <if test="budgetSubjectTotal != null" >
+                budget_subject_total = #{budgetSubjectTotal,jdbcType=DECIMAL},
+            </if>
+            <if test="budgetNumber != null" >
+                budget_number = #{budgetNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="verificationStatus != null" >
+                verification_status = #{verificationStatus,jdbcType=INTEGER},
+            </if>
+            <if test="verificationAmount != null" >
+                verification_amount = #{verificationAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="applyAmmout != null" >
+                apply_ammout = #{applyAmmout,jdbcType=DECIMAL},
+            </if>
+            <if test="actualVerificationAmount != null" >
+                actual_verification_amount = #{actualVerificationAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="ncMessage != null" >
+                nc_message = #{ncMessage,jdbcType=VARCHAR},
+            </if>
+            <if test="budgetarySubjectsCode != null" >
+                budgetary_subjects_code = #{budgetarySubjectsCode,jdbcType=VARCHAR},
+            </if>
+            <if test="auditOpinion != null" >
+                audit_opinion = #{auditOpinion,jdbcType=VARCHAR},
+            </if>
+            <if test="isLevel != null" >
+                is_level = #{isLevel,jdbcType=INTEGER},
+            </if>
+            <if test="goodsType != null" >
+                goods_type =#{goodsType,jdbcType=INTEGER},
+            </if>
+            <if test="version != null" >
+                version =#{version,jdbcType=INTEGER},
+            </if>
+            <if test="promotionType != null" >
+                promotion_type =#{promotionType,jdbcType=INTEGER},
+            </if>
+            <if test="content != null" >
+                content =#{content,jdbcType=VARCHAR},
+            </if>
+            <if test="eocActivityId != null" >
+                eoc_activity_id =#{eocActivityId,jdbcType=BIGINT},
+            </if>
+            <if test="pmsActivityId != null" >
+                pms_activity_id =#{pmsActivityId,jdbcType=BIGINT},
+            </if>
+            <if test="enablePromStrength != null" >
+                enable_prom_strength =#{enablePromStrength,jdbcType=INTEGER},
+            </if>
+            <if test="ruleId != null" >
+                rule_id =#{ruleId,jdbcType=BIGINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.democloud.domain.PromotionInfo" >
+    update promotion_info
+    set dealer_id = #{dealerId,jdbcType=BIGINT},
+      promotion_code = #{promotionCode,jdbcType=VARCHAR},
+      type = #{type,jdbcType=INTEGER},
+      title = #{title,jdbcType=VARCHAR},
+      begin_date = #{beginDate,jdbcType=TIMESTAMP},
+      end_date = #{endDate,jdbcType=TIMESTAMP},
+      scope = #{scope,jdbcType=INTEGER},
+      channel = #{channel,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      estimated_cost = #{estimatedCost,jdbcType=DECIMAL},
+      forecast_sales = #{forecastSales,jdbcType=BIGINT},
+      cost_rate = #{costRate,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      create_user = #{createUser,jdbcType=BIGINT},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      update_user = #{updateUser,jdbcType=BIGINT},
+      from_channel = #{fromChannel,jdbcType=INTEGER},
+      parent_id = #{parentId,jdbcType=BIGINT},
+      budgetary_subjects = #{budgetarySubjects,jdbcType=VARCHAR},
+      programme_budget = #{programmeBudget,jdbcType=DECIMAL},
+      budget_subject_total = #{budgetSubjectTotal,jdbcType=DECIMAL},
+      budget_number = #{budgetNumber,jdbcType=VARCHAR},
+      verification_status = #{verificationStatus,jdbcType=INTEGER},
+      verification_amount = #{verificationAmount,jdbcType=DECIMAL},
+      apply_ammout = #{applyAmmout,jdbcType=DECIMAL},
+      actual_verification_amount = #{actualVerificationAmount,jdbcType=DECIMAL},
+      nc_message = #{ncMessage,jdbcType=VARCHAR},
+      budgetary_subjects_code = #{budgetarySubjectsCode,jdbcType=VARCHAR},
+      audit_opinion = #{auditOpinion,jdbcType=VARCHAR},
+      is_level = #{isLevel,jdbcType=INTEGER},
+      goods_type = #{goodsType,jdbcType=INTEGER},
+      version = #{version,jdbcType=INTEGER},
+      promotion_type = #{promotionType,jdbcType=INTEGER},
+      content = #{content,jdbcType=VARCHAR},
+      eoc_activity_id = #{eocActivityId,jdbcType=BIGINT},
+      pms_activity_id = #{pmsActivityId,jdbcType=BIGINT},
+      enable_prom_strength = #{enablePromStrength,jdbcType=INTEGER},
+      rule_id = #{ruleId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

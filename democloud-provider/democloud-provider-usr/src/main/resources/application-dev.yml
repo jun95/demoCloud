@@ -1,0 +1,15 @@
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  config-location: classpath:mybatis-config.xml
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    username: root
+    password: 123456
+    url: jdbc:mysql://127.0.0.1:3306/chandao?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
+    type: com.alibaba.druid.pool.DruidDataSource
+
+logging:
+  level:
+    root: info
